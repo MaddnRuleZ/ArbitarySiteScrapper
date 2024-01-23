@@ -18,7 +18,6 @@ class MSSQLDatabase:
             print(f"Error connecting to the database: {e}")
             return None
 
-
     # -------------------------------------Inserting Data---------------------------------------------------------
 
     # execute before Looping
@@ -79,8 +78,25 @@ class MSSQLDatabase:
                 print(f"Error inserting data: {e}")
         else:
             print("Entry already exists.")
-
         cursor.close()
+
+    def add_new_colums(self, result):
+        table_name = "FCompanys"
+        if not self.conn:
+            print("Connection error. Unable to insert data.")
+            return
+        cursor = self.conn.cursor()
+
+        try:
+            # Update the existing row
+            cursor.execute(
+                f"UPDATE {table_name} SET kontakt_url=?, impressum_url=?, emails=? WHERE SiteURL=?",
+                (result.kontakt_url, result.impressum_url, result.emailAddresses, result.url)
+            )
+            self.conn.commit()
+            print("DATABASE Updated successfully!")
+        except pyodbc.Error as e:
+            print(f"Error updating data: {e}")
 
     def print_table_data(self, table_name):
         try:
