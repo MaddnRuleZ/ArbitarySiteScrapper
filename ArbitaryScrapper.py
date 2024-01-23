@@ -26,19 +26,28 @@ class ArbitaryScrapper:
         self.emailAddresses = set()
 
     def get_all_matching_links(self):
+        print("FIRST 4")
+
+        kontaktUrl = ""
+        impressumUrl = ""
         impressumLinks = self.get_links_with_keyword("impressum")
         kontaktLinks = self.get_links_with_keyword("kontakt")
-        print("FIRST 4")
-        for url in self.matching_links_set:
+        combined_set = set(impressumLinks).union(kontaktLinks)
+
+        for url in combined_set:
             print(url)
             self.driver.get(url)
             for address in self.get_email_addresses():
                 self.emailAddresses.add(address)
-                
         email_addresses = "{" + ", ".join('"' + email + '"' for email in self.emailAddresses) + "}"
 
-        res = Result(self.url, "telNr", kontaktLinks[0], impressumLinks[0], email_addresses)
-        return res
+        if kontaktLinks and len(kontaktLinks) > 0:
+            kontaktUrl = kontaktLinks[0]
+
+        if impressumLinks and len(impressumLinks) > 0:
+            impressumUrl = impressumLinks[0]
+
+        return Result(self.url, kontaktUrl, impressumUrl, email_addresses)
 
 
     def get_email_addresses(self):
@@ -67,18 +76,15 @@ class ArbitaryScrapper:
         return matching_links[:max_links]
 
 class Result:
-    def __init__(self, url, tel_nr, kontakt_url, impressum_url, emailAddresses):
+    def __init__(self, url,  kontakt_url, impressum_url, emailAddresses):
         # todo check for None Values
-
-
         self.url = url
-        self.tel_nr = tel_nr
         self.kontakt_url = kontakt_url
         self.impressum_url = impressum_url
         self.emailAddresses = emailAddresses
 
     def to_csv(self):
-        csv_format = f"{self.url},{self.tel_nr},{self.kontakt_url},{self.impressum_url},{self.emailAddresses}"
+        csv_format = f"{self.url}, {self.emailAddresses}, {self.kontakt_url}, {self.impressum_url}"
         return csv_format
 
 
