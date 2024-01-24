@@ -7,15 +7,15 @@ testingUrl2 = "http://www.argelith.com/"
 testingUrl3 = "https://austing.de/"
 testingUrl4 = "http://aviretta.com/"
 
-
 def main():
+    print("Starting Scrapping Process")
     msql = MSSQLDatabase()
 
-    print("Starting Scrapping Process")
     for url in Utilities.read_text_file("dox/database.txt"):
         if not url or url == "None":
             print("Skipping None Type!")
-            return
+            continue
+        
         arbitary = ArbitaryScrapper(url)
         result = arbitary.get_all_matching_links()
 
@@ -24,12 +24,20 @@ def main():
         msql.add_new_colums(result)
         print("----------------------")
 
-
-
-
-
-
-
-
-
 main()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
