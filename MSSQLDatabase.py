@@ -4,9 +4,9 @@ import pyodbc
 class MSSQLDatabase:
     def __init__(self):
         self.server = "192.168.178.22"
-        self.database = "WhiteWidow"
-        self.username = "maddinRulez"
-        self.password = "dx~pWf714$TxRy98"
+        self.database = "Database_NAME"
+        self.username = "USER_NAME"
+        self.password = "PASSWORD"
         self.conn = self._create_connection()
 
     def _create_connection(self):
