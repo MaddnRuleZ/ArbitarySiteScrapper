@@ -11,7 +11,7 @@ def main():
     print("Starting Scrapping Process")
     msql = MSSQLDatabase()
     links = Utilities.read_text_file("dox/database.txt")
-    links = Utilities.remove_first_n_elements(links, 772)
+    links = Utilities.remove_first_n_elements(links, 1116)
 
     for url in links:
         if not url or url == "None":
