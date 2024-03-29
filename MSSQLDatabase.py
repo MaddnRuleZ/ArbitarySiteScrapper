@@ -4,9 +4,9 @@ import pyodbc
 class MSSQLDatabase:
     def __init__(self):
         self.server = "192.168.178.22"
-        self.database = "Database_NAME"
-        self.username = "USER_NAME"
-        self.password = "PASSWORD"
+        self.database = "AvA"
+        self.username = "princeofdarkness"
+        self.password = "dxr74z3H69"
         self.conn = self._create_connection()
 
     def _create_connection(self):
@@ -115,7 +115,18 @@ class MSSQLDatabase:
         except pyodbc.Error as e:
             print(f"Error retrieving data: {e}")
 
+    def read_excel_column_by_index(self, file_path, sheet_name, column_index):
+        try:
+            # Read the Excel file
+            df = pd.read_excel(file_path, sheet_name=sheet_name)
 
+            # Extract the specified column by index
+            column_data = df.iloc[:, column_index].tolist()
+
+            return column_data
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return []
 
     def get_all_facebooks(self, table_name, sheet_name):
         query = "SELECT * FROM " + table_name + " WHERE SiteURL LIKE '%facebook%'"
@@ -124,7 +135,6 @@ class MSSQLDatabase:
     def save_as_excel(self, table_name, sheet_name):
         query = 'SELECT * FROM ' + table_name + ' ORDER BY Stadt ASC'
         self.save_as_excel_querry(sheet_name, query)
-
 
     def save_as_excel_querry(self, sheet_name, query):
         # Use pandas to read Program query results into a DataFrame

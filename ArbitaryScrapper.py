@@ -1,11 +1,8 @@
 import random
 import re
 import time
-import traceback
 from urllib.parse import urlparse, urljoin
-from datetime import datetime
 from selenium import webdriver
-from selenium.webdriver import Keys
 from selenium.webdriver.common.by import By
 from selenium.webdriver.chrome.options import Options
 
@@ -25,21 +22,33 @@ class ArbitaryScrapper:
         self.matching_links_set = set()
         self.emailAddresses = set()
 
-    def get_all_matching_links(self):
-        print("FIRST 4")
 
+    # search for all mails on root and Kontakt / Impressum Site
+    def get_all_matching_links(self):
+        fbMails = self.handle_facebook_links()
+        if fbMails is not None:
+            return fbMails
+
+        print("Obtaining Matching")
         kontaktUrl = ""
         impressumUrl = ""
+        contactUrl = ""
+        servicesUrl = ""
         impressumLinks = self.get_links_with_keyword("impressum")
         kontaktLinks = self.get_links_with_keyword("kontakt")
-        combined_set = set(impressumLinks).union(kontaktLinks)
+        contactUrl = self.get_links_with_keyword("contact")
+        servicesUrl = self.get_links_with_keyword("services")
+        combined_set = set(impressumLinks).union(kontaktLinks, contactUrl, servicesUrl)
+        combined_set.add(self.url)
 
         for url in combined_set:
             print(url)
             self.driver.get(url)
             for address in self.get_email_addresses():
                 self.emailAddresses.add(address)
-        email_addresses = "{" + ", ".join('"' + email + '"' for email in self.emailAddresses) + "}"
+            for address2 in self.get_email_addresses_in_href():
+                self.emailAddresses.add(address2)
+        email_addresses = ", ".join(email for email in self.emailAddresses)
 
         if kontaktLinks and len(kontaktLinks) > 0:
             kontaktUrl = kontaktLinks[0]
@@ -47,8 +56,43 @@ class ArbitaryScrapper:
         if impressumLinks and len(impressumLinks) > 0:
             impressumUrl = impressumLinks[0]
 
-        return Result(self.url, kontaktUrl, impressumUrl, email_addresses)
+        # return Result(self.url, kontaktUrl, impressumUrl, email_addresses)
+        return email_addresses
 
+    def handle_facebook_links(self):
+        if not self.is_facebook_link(self.url):
+            return None
+        self.click_allow_all_cookies()
+        self.wait_random_time()
+        mail_addresses = self.get_email_addresses()
+        return mail_addresses
+
+    def chlick_on_fb_x(self):
+        try:
+            # Find the div by class names
+            custom_div_element = self.driver.find_element(By.XPATH, "//i[contains(@class, 'x1b0d499') and contains(@class, 'x1d69dk1')]")
+
+
+            # Click on the div
+            custom_div_element.click()
+
+            print("Clicked on the custom div element.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    def click_allow_all_cookies(self):
+        try:
+            # Find the element by XPath
+            allow_cookies_button = self.driver.find_element(By.XPATH, "//span[contains(@class, 'x1lliihq') and contains(@class, 'x6ikm8r') and contains(@class, 'x10wlt62') and contains(@class, 'x1n2onr6') and contains(@class, 'xlyipyv') and contains(@class, 'xuxw1ft') and text()='Optionale Cookies ablehnen']")
+
+            allow_cookies_button.click()
+            print("Clicked on 'Alle Cookies erlauben' button.")
+        except Exception as e:
+            print(f"An error occurred: {e}")
+
+    def wait_random_time(self):
+        random_time = random.uniform(1, 3)  # Generate a random float between 1 and 3
+        time.sleep(random_time)
 
     def get_email_addresses(self):
         # Get the page source
@@ -56,6 +100,28 @@ class ArbitaryScrapper:
         email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+(?:\(at\)|@)[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
         email_addresses = email_pattern.findall(page_source)
         return email_addresses
+
+    def get_email_addresses_in_href(self):
+        try:
+            # Get the page source
+            page_source = self.driver.page_source
+
+            # Compile regex pattern for email addresses
+            email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+(?:\(at\)|@)[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+
+            # Find all email addresses in href attributes
+            href_emails = set()
+            for match in re.finditer(r'href="(.*?)"', page_source):
+                href = match.group(1)
+                if email_pattern.search(href):
+                    href_emails.update(email_pattern.findall(href))
+
+            return list(href_emails)
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return []
+
+
 
 
     def get_links_with_keyword(self, keyword, max_links=2):
@@ -75,6 +141,17 @@ class ArbitaryScrapper:
         # return instead self.matching_links_set.update(matching_links[:max_links])
         return matching_links[:max_links]
 
+    def is_facebook_link(self, link):
+        try:
+            parsed_url = urlparse(link)
+            if parsed_url.netloc.endswith('facebook.com'):
+                return True
+            return False
+        except Exception as e:
+            print(f"An error occurred: {e}")
+            return False
+
+
 class Result:
     def __init__(self, url,  kontakt_url, impressum_url, emailAddresses):
         # todo check for None Values
@@ -86,8 +163,3 @@ class Result:
     def to_csv(self):
         csv_format = f"{self.url}, {self.emailAddresses}, {self.kontakt_url}, {self.impressum_url}"
         return csv_format
-
-
-
-
-
