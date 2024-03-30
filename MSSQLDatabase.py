@@ -3,7 +3,7 @@ import pyodbc
 
 class MSSQLDatabase:
     def __init__(self):
-        self.server = "192.168.178.22"
+        self.server = "obrechtstudios.de"
         self.database = "AvA"
         self.username = "princeofdarkness"
         self.password = "dxr74z3H69"

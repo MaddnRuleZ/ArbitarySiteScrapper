@@ -49,14 +49,6 @@ class ArbitaryScrapper:
             for address2 in self.get_email_addresses_in_href():
                 self.emailAddresses.add(address2)
         email_addresses = ", ".join(email for email in self.emailAddresses)
-
-        if kontaktLinks and len(kontaktLinks) > 0:
-            kontaktUrl = kontaktLinks[0]
-
-        if impressumLinks and len(impressumLinks) > 0:
-            impressumUrl = impressumLinks[0]
-
-        # return Result(self.url, kontaktUrl, impressumUrl, email_addresses)
         return email_addresses
 
     def handle_facebook_links(self):
@@ -65,7 +57,8 @@ class ArbitaryScrapper:
         self.click_allow_all_cookies()
         self.wait_random_time()
         mail_addresses = self.get_email_addresses()
-        return mail_addresses
+        final_addresses = ", ".join(email for email in self.emailAddresses)
+        return final_addresses
 
     def chlick_on_fb_x(self):
         try:
