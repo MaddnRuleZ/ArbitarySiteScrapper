@@ -3,38 +3,27 @@ from ArbitaryScrapper import ArbitaryScrapper
 from ExcelUtils import ExcelUtils
 from MSSQLDatabase import MSSQLDatabase
 
-testingUrl = "https://www.arius.de/de/home.html"
-testingUrl2 = "http://www.argelith.com/"
-testingUrl3 = "https://austing.de/"
-testingUrl4 = "http://aviretta.com/"
-
 href = "https://bayos.eatbu.com/?lang=de#contact"
 
 def testing_href_curls():
     arbitary = ArbitaryScrapper(href)
     result = arbitary.get_all_matching_links()
     print(result)
-
-
 def testing_Excel_Stuff():
     print("Exc")
-    xlsx = ExcelUtils("dox/RestaurantBarMkTesting.xlsx", "Sheet1")
 
     for x in range(1, 10):
         print("late")
-        xlsx.change_cell_content("A", x, "haw haw")
 
 
 def main():
-    testing_href_curls()
-    # scrapp_eggers()
-    '''print("Main")
-    for item in list:
-        print(item)'''
+    scrapp_eggers()
 
 def scrapp_eggers():
     print("Starting Scrapping Process")
     msql = MSSQLDatabase()
+    xlsx = ExcelUtils("dox/RestaurantBarMk1.xlsx", "Sheet1")
+
     url_list = msql.read_excel_column_by_index("dox/RestaurantBarMk1.xlsx", "Sheet1", 6)
     print("Read Document fully")
 
@@ -51,6 +40,11 @@ def scrapp_eggers():
             result = arbitary.get_all_matching_links()
             print(f"---- RESULT for URL {index} ------")
             print(result)
+            if result is None:
+                continue
+
+            xlsx.change_cell_content("N", index, result)
+            print("inserted Entry")
             print("----------------------")
 
         except Exception as e:
