@@ -100,14 +100,18 @@ class ArbitaryScrapper:
             page_source = self.driver.page_source
 
             # Compile regex pattern for email addresses
-            email_pattern = re.compile(r'\b[A-Za-z0-9._%+-]+(?:\(at\)|@)[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b')
+            email_pattern = re.compile(r'[\w\.-]+@[\w\.-]+\.\w+')
 
             # Find all email addresses in href attributes
             href_emails = set()
             for match in re.finditer(r'href="(.*?)"', page_source):
                 href = match.group(1)
-                if email_pattern.search(href):
-                    href_emails.update(email_pattern.findall(href))
+                if href.startswith('mailto:'):
+                    email = href.split(':')[1]
+                    href_emails.add(email)
+                else:
+                    for email_match in email_pattern.finditer(href):
+                        href_emails.add(email_match.group())
 
             return list(href_emails)
         except Exception as e:

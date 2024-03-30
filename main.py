@@ -8,6 +8,14 @@ testingUrl2 = "http://www.argelith.com/"
 testingUrl3 = "https://austing.de/"
 testingUrl4 = "http://aviretta.com/"
 
+href = "https://bayos.eatbu.com/?lang=de#contact"
+
+def testing_href_curls():
+    arbitary = ArbitaryScrapper(href)
+    result = arbitary.get_all_matching_links()
+    print(result)
+
+
 def testing_Excel_Stuff():
     print("Exc")
     xlsx = ExcelUtils("dox/RestaurantBarMkTesting.xlsx", "Sheet1")
@@ -18,7 +26,7 @@ def testing_Excel_Stuff():
 
 
 def main():
-    scrapp_eggers()
+    testing_href_curls()
     # scrapp_eggers()
     '''print("Main")
     for item in list:
@@ -32,10 +40,7 @@ def scrapp_eggers():
 
     for index, url in enumerate(url_list, start=2):
         url_string = str(url)
-
-
         print("Scrapping url :" + url_string)
-
 
         if not url_string or url_string == "None" or url_string == "nan":
             print("Skipping None Type!")
