@@ -43,11 +43,12 @@ def main():
     print(len(url_list))
     print("Read Document fully")
 
-    with multiprocessing.Pool(processes=5) as pool:
+    with multiprocessing.Pool(processes= 7) as pool:
         # Use enumerate to get both index and URL
         url_index_pairs = list(enumerate(url_list, start=2))
+        url_index_pairs = Utilities.remove_first_n_elements(url_index_pairs, 2107)
 
-        chunk_size = 5  # Number of processes to start concurrently
+        chunk_size = 7  # Number of processes to start concurrently
         for i in range(0, len(url_index_pairs), chunk_size):
             # Divide the list into chunks
             chunk = url_index_pairs[i:i + chunk_size]

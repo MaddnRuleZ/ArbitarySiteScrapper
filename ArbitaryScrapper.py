@@ -21,6 +21,8 @@ class ArbitaryScrapper:
         self.driver.get(url)
         self.matching_links_set = set()
         self.emailAddresses = set()
+        self.driver.set_page_load_timeout(30)
+        self.driver.set_script_timeout(30)
 
 
     # search for all mails on root and Kontakt / Impressum Site
