@@ -25,6 +25,7 @@ class ArbitaryScrapper:
         self.driver.set_script_timeout(30)
 
 
+
     # search for all mails on root and Kontakt / Impressum Site
     def get_all_matching_links(self):
         fbMails = self.handle_facebook_links()
