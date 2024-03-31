@@ -25,7 +25,6 @@ class ArbitaryScrapper:
         self.driver.set_script_timeout(30)
 
 
-
     # search for all mails on root and Kontakt / Impressum Site
     def get_all_matching_links(self):
         fbMails = self.handle_facebook_links()
@@ -56,7 +55,8 @@ class ArbitaryScrapper:
 
     def handle_facebook_links(self):
         if not self.is_facebook_link(self.url):
-            return None
+            return ""
+        return ""
         self.click_allow_all_cookies()
         self.wait_random_time()
         mail_addresses = self.get_email_addresses()
