@@ -14,34 +14,32 @@ def testing_href_curls():
 
 
 def scrapp_eggers(url_index_pair):
-    index, url  = url_index_pair
+    index, url = url_index_pair
     url_string = str(url)
     print("Scrapping url :" + url_string)
 
     if not url_string or url_string == "None" or url_string == "nan":
         print("Skipping None Type!")
         return
+    result = "None"
 
     try:
         arbitary = ArbitaryScrapper(url_string)
         result = arbitary.get_all_matching_links()
         print(f"---- RESULT for URL {index} ------")
         print(result)
-        if result is None or result == "":
-            return
-
-        xlsx = ExcelUtils("dox/RestaurantBarMk1.xlsx", "Sheet1")
-        xlsx.change_cell_content("N", index, result)
-        print("Inserted Entry")
-        print("----------------------")
 
     except Exception as e:
         print(f"FATAL ERROR IN URL {index}: {str(e)}")
 
+    Utilities.append_string_to_file("dox/database.txt", "[" + str(index) + "]" + result)
+    print("Inserted Entry")
+    print("----------------------")
+
 
 def main():
     msql = MSSQLDatabase()
-    url_list = msql.read_excel_column_by_index("dox/RestaurantBarMk1.xlsx", "Sheet1", 6)
+    url_list = msql.read_excel_column_by_index("dox/RestaurantBarMkTesting.xlsx", "Sheet1", 6)
     print(len(url_list))
     print("Read Document fully")
 
